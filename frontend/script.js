@@ -30,6 +30,7 @@ let currentProfile = null;
 let chatHistory = [];
 let lastGeneratedResult = null;
 let typingIndicatorElement = null;
+let dailyTasks = [];
 
 // --- Elements ---
 const form = document.getElementById('futureme-form');
@@ -45,6 +46,20 @@ const toast = document.getElementById('toast');
 const chatContainer = document.getElementById('chat-container');
 const chatInput = document.getElementById('chat-input');
 const chatSendBtn = document.getElementById('chat-send-btn');
+
+// Blueprint elements
+const blueprintSection = document.getElementById('blueprint');
+const navLinkBlueprint = document.getElementById('link-blueprint');
+const blueprintList = document.getElementById('blueprint-list');
+const blueprintProgressFill = document.getElementById('blueprint-progress-fill');
+const blueprintProgressText = document.getElementById('blueprint-progress-text');
+const blueprintSuccessCard = document.getElementById('blueprint-success-card');
+const btnShowAdapt = document.getElementById('btn-show-adapt');
+const adaptFormWrapper = document.getElementById('adapt-form-wrapper');
+const adaptFocusInput = document.getElementById('adapt-focus-input');
+const btnSubmitAdapt = document.getElementById('btn-submit-adapt');
+const btnCancelAdapt = document.getElementById('btn-cancel-adapt');
+const blueprintLoading = document.getElementById('blueprint-loading');
 
 let toastTimeout;
 
@@ -182,6 +197,173 @@ function hideTypingIndicator() {
     }
 }
 
+// --- Daily Blueprint Management ---
+
+function updateBlueprintProgress() {
+    const total = dailyTasks.length;
+    if (total === 0) {
+        blueprintProgressFill.style.width = '0%';
+        blueprintProgressText.textContent = '0%';
+        blueprintSuccessCard.style.display = 'none';
+        return;
+    }
+    
+    const completedCount = dailyTasks.filter(t => t.completed).length;
+    const percentage = Math.round((completedCount / total) * 100);
+    
+    blueprintProgressFill.style.width = percentage + '%';
+    blueprintProgressText.textContent = percentage + '%';
+    
+    if (percentage === 100) {
+        blueprintSuccessCard.style.display = 'block';
+        showToast("Daily Blueprint 100% completed! Future you is proud.");
+    } else {
+        blueprintSuccessCard.style.display = 'none';
+    }
+}
+
+function renderDailyPlan(tasks) {
+    // Clear previous items safely
+    blueprintList.replaceChildren();
+    
+    // Map tasks to state
+    dailyTasks = tasks.map(t => ({
+        task: t.task,
+        duration: t.duration,
+        description: t.description,
+        motivation: t.motivation,
+        completed: false
+    }));
+    
+    // Reset progress
+    updateBlueprintProgress();
+    
+    // Render each item
+    dailyTasks.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'blueprint-item';
+        
+        // Checkbox container
+        const checkContainer = document.createElement('div');
+        checkContainer.className = 'blueprint-checkbox-container';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'blueprint-check-' + index;
+        checkbox.checked = item.completed;
+        
+        checkbox.addEventListener('change', () => {
+            item.completed = checkbox.checked;
+            if (item.completed) {
+                itemDiv.classList.add('completed');
+            } else {
+                itemDiv.classList.remove('completed');
+            }
+            updateBlueprintProgress();
+        });
+        
+        checkContainer.appendChild(checkbox);
+        itemDiv.appendChild(checkContainer);
+        
+        // Details
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'blueprint-item-details';
+        
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'blueprint-item-header';
+        
+        const taskTitle = document.createElement('span');
+        taskTitle.className = 'blueprint-item-task';
+        taskTitle.textContent = item.task;
+        headerDiv.appendChild(taskTitle);
+        
+        const durationPill = document.createElement('span');
+        durationPill.className = 'blueprint-item-duration';
+        durationPill.textContent = item.duration;
+        headerDiv.appendChild(durationPill);
+        
+        detailsDiv.appendChild(headerDiv);
+        
+        const descP = document.createElement('p');
+        descP.className = 'blueprint-item-desc';
+        descP.textContent = item.description;
+        detailsDiv.appendChild(descP);
+        
+        const motivationP = document.createElement('p');
+        motivationP.className = 'blueprint-item-motivation';
+        motivationP.textContent = `"${item.motivation}"`;
+        detailsDiv.appendChild(motivationP);
+        
+        itemDiv.appendChild(detailsDiv);
+        blueprintList.appendChild(itemDiv);
+    });
+}
+
+// Adapt blueprint setup
+btnShowAdapt.addEventListener('click', () => {
+    btnShowAdapt.style.display = 'none';
+    adaptFormWrapper.style.display = 'block';
+    adaptFocusInput.focus();
+});
+
+btnCancelAdapt.addEventListener('click', () => {
+    adaptFormWrapper.style.display = 'none';
+    btnShowAdapt.style.display = 'block';
+    adaptFocusInput.value = '';
+});
+
+async function adaptDailyBlueprint() {
+    const focusVal = adaptFocusInput.value.trim();
+    if (!focusVal) {
+        showToast("Please enter a focus or constraint for today.");
+        return;
+    }
+    
+    if (!currentProfile) return;
+    
+    // Hide form actions and show loading spinner
+    adaptFormWrapper.style.display = 'none';
+    blueprintLoading.style.display = 'block';
+    
+    try {
+        const response = await fetch('/api/adapt-daily-plan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userProfile: currentProfile,
+                focus: focusVal
+            })
+        });
+        
+        const result = await response.json();
+        blueprintLoading.style.display = 'none';
+        
+        if (response.ok && result.success) {
+            renderDailyPlan(result.dailyPlan);
+            btnShowAdapt.style.display = 'block';
+            adaptFocusInput.value = '';
+            showToast("Blueprint adapted successfully!");
+        } else {
+            throw new Error(result.error || 'Server error');
+        }
+    } catch (err) {
+        console.error("Adapt blueprint error:", err);
+        blueprintLoading.style.display = 'none';
+        adaptFormWrapper.style.display = 'block';
+        showToast("FutureMe could not adapt your plan right now. Try again.");
+    }
+}
+
+btnSubmitAdapt.addEventListener('click', adaptDailyBlueprint);
+adaptFocusInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        adaptDailyBlueprint();
+    }
+});
+
 // --- App Event Listeners ---
 
 // Submit Identity Parameters
@@ -229,6 +411,13 @@ form.addEventListener('submit', async (e) => {
             // Render Result Card dynamically
             renderResult(lastGeneratedResult);
             
+            // Render Blueprint Section
+            if (lastGeneratedResult.dailyPlan) {
+                renderDailyPlan(lastGeneratedResult.dailyPlan);
+                blueprintSection.style.display = 'block';
+                navLinkBlueprint.style.display = 'block';
+            }
+            
             // Switch states
             loadingState.style.display = 'none';
             resultState.style.display = 'block';
@@ -273,6 +462,16 @@ resetBtn.addEventListener('click', () => {
     placeholder.id = 'chat-placeholder';
     placeholder.textContent = 'You must establish a connection with your FutureMe before you can ask questions. Fill out the form above.';
     chatContainer.appendChild(placeholder);
+    
+    // Reset blueprint states & UI
+    blueprintSection.style.display = 'none';
+    navLinkBlueprint.style.display = 'none';
+    blueprintList.replaceChildren();
+    dailyTasks = [];
+    adaptFormWrapper.style.display = 'none';
+    btnShowAdapt.style.display = 'block';
+    adaptFocusInput.value = '';
+    blueprintLoading.style.display = 'none';
     
     currentProfile = null;
     chatHistory = [];

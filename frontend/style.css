@@ -394,3 +394,185 @@ footer { border-top: 1px solid var(--glass-border); padding: 2rem; text-align: c
     .app-card { padding: 2rem 1.5rem; }
     section { padding: 5rem 0; }
 }
+
+/* Daily Blueprint Styles */
+.blueprint-progress-container {
+    margin-bottom: 2rem;
+}
+.blueprint-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.blueprint-progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+}
+.blueprint-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.blueprint-success {
+    background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 80%);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.8s ease forwards;
+}
+.blueprint-success .success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: bounce 1.5s infinite alternate ease-in-out;
+}
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+.blueprint-success h3 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.blueprint-success p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.blueprint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.blueprint-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+.blueprint-item:hover {
+    background: var(--glass-hover);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+}
+
+.blueprint-checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 0.2rem;
+}
+
+/* Custom Checkbox Design */
+.blueprint-checkbox-container input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--glass-border);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    outline: none;
+}
+.blueprint-checkbox-container input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    border-color: transparent;
+}
+.blueprint-checkbox-container input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 7px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.blueprint-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.blueprint-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.blueprint-item-task {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.blueprint-item-duration {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.blueprint-item-desc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    transition: all 0.3s ease;
+}
+
+.blueprint-item-motivation {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #a5b4fc; /* Indigo 300 */
+    border-left: 2px solid var(--accent-1);
+    padding-left: 0.75rem;
+    margin-top: 0.4rem;
+    transition: all 0.3s ease;
+}
+
+/* Completed State */
+.blueprint-item.completed {
+    border-color: rgba(79, 70, 229, 0.2);
+    background: rgba(79, 70, 229, 0.02);
+}
+.blueprint-item.completed .blueprint-item-task {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+.blueprint-item.completed .blueprint-item-desc {
+    color: rgba(161, 161, 170, 0.4);
+    text-decoration: line-through;
+}
+.blueprint-item.completed .blueprint-item-motivation {
+    opacity: 0.4;
+    border-color: rgba(79, 70, 229, 0.2);
+}
+

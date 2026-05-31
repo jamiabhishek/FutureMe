@@ -19,6 +19,7 @@
         <div class="nav-links">
             <a href="#how-it-works" id="link-how-it-works">How it works</a>
             <a href="#create" id="link-create">Create</a>
+            <a href="#blueprint" id="link-blueprint" style="display: none;">Daily Blueprint</a>
             <a href="#chat" id="link-chat">Chat</a>
             <a href="#ai-hack" id="link-ai-hack">AI Hack</a>
         </div>
@@ -127,6 +128,61 @@
                     <div class="result-actions">
                         <button id="copy-btn" class="btn btn-primary">Copy Result</button>
                         <button id="reset-btn" class="btn btn-secondary">Create Another</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blueprint" class="container reveal" style="display: none;">
+        <div class="badge" id="badge-blueprint">Daily Alignment</div>
+        <h2>Your Daily Blueprint</h2>
+        <p>Interactive tasks designed by your FutureMe to match your future identity.</p>
+        
+        <div class="app-container" style="margin-top: 3rem;">
+            <div class="glass-card app-card blueprint-card">
+                <!-- Progress Container -->
+                <div class="blueprint-progress-container">
+                    <div class="blueprint-progress-info">
+                        <span>Daily Alignment Progress</span>
+                        <span id="blueprint-progress-text">0%</span>
+                    </div>
+                    <div class="blueprint-progress-bar-bg">
+                        <div class="blueprint-progress-bar-fill" id="blueprint-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Success State Card -->
+                <div id="blueprint-success-card" class="blueprint-success" style="display: none; margin-top: 1.5rem;">
+                    <div class="success-icon">🏆</div>
+                    <h3>100% Aligned!</h3>
+                    <p id="blueprint-success-message">Excellent work. Every single action today was designed to manifest your future identity. Keep this consistency!</p>
+                </div>
+
+                <!-- Checklist Container -->
+                <div class="blueprint-list" id="blueprint-list">
+                    <!-- Checkbox items will be rendered here dynamically -->
+                </div>
+
+                <!-- Adapt Blueprint Trigger -->
+                <div class="adapt-section" style="margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+                    <button id="btn-show-adapt" class="btn btn-secondary" style="width: 100%;">Adapt Plan for Today</button>
+                    
+                    <div id="adapt-form-wrapper" style="display: none; margin-top: 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="adapt-focus-input">What's your main constraint or focus today?</label>
+                            <input type="text" id="adapt-focus-input" class="form-control" placeholder="e.g. low energy, busy schedule, focus on coding...">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <button id="btn-submit-adapt" class="btn btn-primary">Customize Plan</button>
+                            <button id="btn-cancel-adapt" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+
+                    <!-- Loading State for Adaptation -->
+                    <div id="blueprint-loading" style="display: none; text-align: center; margin-top: 1.5rem;">
+                        <div class="spinner" style="width: 30px; height: 30px; margin-bottom: 0.5rem;"></div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Recalibrating constraints...</p>
                     </div>
                 </div>
             </div>
